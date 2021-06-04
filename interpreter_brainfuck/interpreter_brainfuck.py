@@ -1,4 +1,6 @@
 import argparse
+import os
+
 from Brainfuck_Classes import *
 
 
@@ -17,6 +19,10 @@ def parse_command_line_args():
     parser.add_argument("-t", "--type", dest="brainfuck_type",
                         choices=["1", "2", "n"], default="1",
                         metavar="TYPE", help="The type of brainfuck to run.")
+
+    parser.add_argument("-r", "--relative", dest="relative",
+                        choices=["script", "terminal"], default="script",
+                        metavar="RELATIVE", help="Path relative to script or console, only works with -p")
 
     parser.add_argument("-i", "--input", dest="ifn",
                         metavar="INPUTTXT", help="input txt file name")
@@ -55,6 +61,9 @@ def io_out(i, bf: Brainfuck):
 
 
 def non_matching_while_loops(txt):
+    """Checks if while loops are matching
+        [[ would be un-matching, for example
+    """
     locs = []
     index = 0
     while index < len(txt):
@@ -64,11 +73,11 @@ def non_matching_while_loops(txt):
                 return "] at " + str(index)
             else:
                 locs.pop()
-        elif char == "[":
+        elif char == "[":  # wait for matching ]
             locs.append(index)
         index += 1
     if len(locs) > 0:
-        return "[ at " + str(locs)
+        return "[ at " + str(locs)  # no matching ] found
     return None
 
 
@@ -107,6 +116,9 @@ def main():
             pfn = "examples/1d/1-brainfuck_hello_world.brainfuck1"
         elif args.example == "1-2":
             pfn = "examples/1d/2-brainfuck_rot13.brainfuck1"
+
+    if args.relative == "script" or args.example != "None":
+        pfn = os.path.join(os.path.dirname(__file__), pfn)
     bf = create_interpreter(args.brainfuck_type, pfn)
     if args.ifn is not None:
         read_input(args.ifn, bf)
