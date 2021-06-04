@@ -4,10 +4,15 @@ from Brainfuck_Classes import *
 
 def parse_command_line_args():
     parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
 
-    parser.add_argument("-p", "--program", dest="prog_file_name",
-                        default="brainfuck_hello_world.txt",
-                        metavar="PROGRAM", help="Execute this brainfuck code.")
+    group.add_argument("-p", "--program", dest="prog_file_name",
+                       default="examples/1d/1-brainfuck_hello_world.brainfuck1",
+                       metavar="PROGRAM", help="Execute this brainfuck code.")
+
+    group.add_argument("-e", "--example", dest="example",
+                       choices=["None", "1-1", "1-2"], default="None",
+                       metavar="EXAMPLE", help="example file number, instead of program file name")
 
     parser.add_argument("-t", "--type", dest="brainfuck_type",
                         choices=["1", "2", "n"], default="1",
@@ -83,13 +88,32 @@ def create_interpreter(dimensions: str, file_name: str) -> Brainfuck:
     return bf
 
 
+def console_connected_interpretation(bf):
+    stop = False
+    while not stop:
+        try:
+            stop = bf.next_instruction()
+        except BufferError:
+            bf.write(input("\n$ "))
+            bf.instruction_pointer -= 1
+        print(io_out(-1, bf), end="")
+
+
 def main():
     args = parse_command_line_args()
-    bf = create_interpreter(args.brainfuck_type, args.prog_file_name)
+    pfn = args.prog_file_name
+    if args.example != "None":
+        if args.example == "1-1":
+            pfn = "/examples/1d/1-brainfuck_hello_world.brainfuck1"
+        elif args.example == "1-2":
+            pfn = "examples/1d/2-brainfuck_rot13.brainfuck1"
+    bf = create_interpreter(args.brainfuck_type, pfn)
     if args.ifn is not None:
         read_input(args.ifn, bf)
-    next_instruction(-1, bf)
-    print(io_out(-1, bf))
+        next_instruction(-1, bf)
+        print(io_out(-1, bf))
+    else:
+        console_connected_interpretation(bf)
 
 
 if __name__ == "__main__":

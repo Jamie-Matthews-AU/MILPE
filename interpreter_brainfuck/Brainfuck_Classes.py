@@ -145,7 +145,7 @@ class One_Dimensional_Brainfuck(Brainfuck):
         elif instruction == ".":
             self.io_out_queue.put(chr(self.current_tape_val()))
         elif instruction == ",":
-            if self.io_in_queue.not_empty:
+            if self.io_in_queue.qsize() > 0:
                 read_in = self.io_in_queue.get(block=False)
                 self.tape[self.tape_pointer] = read_in
             else:
