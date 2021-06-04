@@ -4,7 +4,7 @@ from Brainfuck_Classes import *
 
 def parse_command_line_args():
     parser = argparse.ArgumentParser()
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group(required=False)
 
     group.add_argument("-p", "--program", dest="prog_file_name",
                        default="examples/1d/1-brainfuck_hello_world.brainfuck1",
@@ -104,7 +104,7 @@ def main():
     pfn = args.prog_file_name
     if args.example != "None":
         if args.example == "1-1":
-            pfn = "/examples/1d/1-brainfuck_hello_world.brainfuck1"
+            pfn = "examples/1d/1-brainfuck_hello_world.brainfuck1"
         elif args.example == "1-2":
             pfn = "examples/1d/2-brainfuck_rot13.brainfuck1"
     bf = create_interpreter(args.brainfuck_type, pfn)
